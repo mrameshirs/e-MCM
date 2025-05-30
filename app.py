@@ -1310,8 +1310,15 @@ def audit_group_dashboard(drive_service, sheets_service):
         if not active_periods:
             st.warning("No active MCM periods. Contact Planning Officer.")
         else:
-            period_options = {f"{p['month_name']} {p['year']}": k for k, p in
-                              sorted(active_periods.items(), reverse=True)}
+            # period_options = {f"{p['month_name']} {p['year']}": k for k, p in
+            #                   sorted(active_periods.items(), reverse=True)}
+            period_options = {
+                                 f"{p.get('month_name')} {p.get('year')}": k
+                                 for k, p in sorted(active_periods.items(), reverse=True)
+                                 if p.get('month_name') and p.get('year') # Only include if both keys exist
+                             }
+            if not period_options and active_periods: # If active_periods was not empty but options are
+                st.warning("Some active MCM periods have incomplete data (missing month/year) and are not shown as options.")
             selected_period_display = st.selectbox("Select Active MCM Period", options=list(period_options.keys()),
                                                    key="ag_select_mcm_upload")
             if selected_period_display:
@@ -1482,8 +1489,15 @@ def audit_group_dashboard(drive_service, sheets_service):
         if not mcm_periods:
             st.info("No MCM periods by PCO yet.")
         else:
-            all_period_options = {f"{p['month_name']} {p['year']}": k for k, p in
-                                  sorted(mcm_periods.items(), key=lambda item: item[0], reverse=True)}
+            # all_period_options = {f"{p['month_name']} {p['year']}": k for k, p in
+            #                       sorted(mcm_periods.items(), key=lambda item: item[0], reverse=True)}
+            all_period_options = {
+                                     f"{p.get('month_name')} {p.get('year')}": k
+                                     for k, p in sorted(mcm_periods.items(), key=lambda item: item[0], reverse=True)
+                                     if p.get('month_name') and p.get('year') # Only include if both keys exist
+                                 }
+            if not all_period_options and mcm_periods:
+                st.warning("Some MCM periods have incomplete data (missing month/year) and are not shown as options for viewing.")
             if not all_period_options:
                 st.info("No MCM periods found.")
             else:
@@ -1525,8 +1539,15 @@ def audit_group_dashboard(drive_service, sheets_service):
         if not mcm_periods:
             st.info("No MCM periods created yet.")
         else:
-            all_period_options_del = {f"{p['month_name']} {p['year']}": k for k, p in
-                                      sorted(mcm_periods.items(), key=lambda item: item[0], reverse=True)}
+            # all_period_options_del = {f"{p['month_name']} {p['year']}": k for k, p in
+            #                           sorted(mcm_periods.items(), key=lambda item: item[0], reverse=True)}
+            all_period_options_del = {
+                                         f"{p.get('month_name')} {p.get('year')}": k
+                                         for k, p in sorted(mcm_periods.items(), key=lambda item: item[0], reverse=True)
+                                         if p.get('month_name') and p.get('year') # Only include if both keys exist
+                                     }
+            if not all_period_options_del and mcm_periods:
+                st.warning("Some MCM periods have incomplete data (missing month/year) and are not shown as options for deletion.")
             selected_del_period_display = st.selectbox("Select MCM Period", options=list(all_period_options_del.keys()),
                                                        key="ag_del_dars_period")
             if selected_del_period_display and sheets_service:
