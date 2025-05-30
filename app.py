@@ -960,7 +960,10 @@ def pco_dashboard(drive_service, sheets_service):
             sorted_periods_keys = sorted(mcm_periods.keys(), reverse=True)
             for period_key in sorted_periods_keys:
                 data = mcm_periods[period_key]
-                st.markdown(f"<h4>{data['month_name']} {data['year']}</h4>", unsafe_allow_html=True)
+                month_name_display = data.get('month_name', 'Unknown Month')
+                year_display = data.get('year', 'Unknown Year')
+                st.markdown(f"<h4>{month_name_display} {year_display}</h4>", unsafe_allow_html=True)
+                #st.markdown(f"<h4>{data['month_name']} {data['year']}</h4>", unsafe_allow_html=True)
                 col1, col2, col3, col4 = st.columns([2, 2, 1, 2])
                 with col1:
                     st.markdown(f"<a href='{data.get('drive_folder_url', '#')}' target='_blank'>Open Drive Folder</a>",
