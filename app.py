@@ -1031,7 +1031,7 @@ def pco_dashboard(drive_service, sheets_service):
                  for k, p in sorted(active_periods.items(), key=lambda item: item[0], reverse=True)
                  if p.get('month_name') and p.get('year') # Only include if both month_name and year exist
              ]
-             if not period_options:
+            if not period_options:
                  st.warning("No valid MCM periods with complete month and year information found to display options.")
             # period_options = [f"{p['month_name']} {p['year']}" for k, p in
             #                   sorted(active_periods.items(), key=lambda item: item[0], reverse=True)]
