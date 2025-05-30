@@ -26,7 +26,9 @@ from models import FlattenedAuditData, DARHeaderSchema, AuditParaSchema, ParsedD
 from streamlit_option_menu import option_menu
 
 # --- Configuration ---
-YOUR_GEMINI_API_KEY = "AIzaSyBr37Or_irHH89GXzv0JpHOCULF_vMQDUw"  # !!! REPLACE WITH YOUR ACTUAL GEMINI API KEY !!!
+
+YOUR_GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+ # !!! REPLACE WITH YOUR ACTUAL GEMINI API KEY !!!
 
 SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
 CREDENTIALS_FILE = 'credentials.json'
@@ -276,18 +278,49 @@ def load_custom_css():
 
 
 # --- Google API Authentication and Service Initialization ---
+# def get_google_services():
+#     creds = None
+#     if not os.path.exists(CREDENTIALS_FILE):
+#         st.error(f"Service account credentials file ('{CREDENTIALS_FILE}') not found.")
+#         return None, None
+#     try:
+#         creds = service_account.Credentials.from_service_account_file(
+#             CREDENTIALS_FILE, scopes=SCOPES)
+#     except Exception as e:
+#         st.error(f"Failed to load service account credentials: {e}")
+#         return None, None
+#     if not creds: return None, None
+#     try:
+#         drive_service = build('drive', 'v3', credentials=creds)
+#         sheets_service = build('sheets', 'v4', credentials=creds)
+#         return drive_service, sheets_service
+#     except HttpError as error:
+#         st.error(f"An error occurred initializing Google services: {error}")
+#         return None, None
+#     except Exception as e:
+#         st.error(f"An unexpected error with Google services: {e}")
+#         return None, None
+
 def get_google_services():
     creds = None
-    if not os.path.exists(CREDENTIALS_FILE):
-        st.error(f"Service account credentials file ('{CREDENTIALS_FILE}') not found.")
-        return None, None
+    # if not os.path.exists(CREDENTIALS_FILE): # Remove this check
+    #     st.error(f"Service account credentials file ('{CREDENTIALS_FILE}') not found.")
+    #     return None, None
     try:
-        creds = service_account.Credentials.from_service_account_file(
-            CREDENTIALS_FILE, scopes=SCOPES)
-    except Exception as e:
-        st.error(f"Failed to load service account credentials: {e}")
+        # Load credentials from Streamlit secrets
+        creds_dict = st.secrets["google_credentials"]
+        creds = service_account.Credentials.from_service_account_info(
+            creds_dict, scopes=SCOPES
+        )
+    except KeyError:
+        st.error("Google credentials not found in Streamlit secrets. Ensure 'google_credentials' are set.")
         return None, None
-    if not creds: return None, None
+    except Exception as e:
+        st.error(f"Failed to load service account credentials from secrets: {e}")
+        return None, None
+
+    if not creds: return None, None # Should be caught by exceptions above mostly
+
     try:
         drive_service = build('drive', 'v3', credentials=creds)
         sheets_service = build('sheets', 'v4', credentials=creds)
@@ -298,8 +331,6 @@ def get_google_services():
     except Exception as e:
         st.error(f"An unexpected error with Google services: {e}")
         return None, None
-
-
 # --- Google Drive Helper Functions ---
 def find_drive_item_by_name(drive_service, name, mime_type=None, parent_id=None):
     query = f"name = '{name}' and trashed = false"
