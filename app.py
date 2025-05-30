@@ -1038,8 +1038,11 @@ def pco_dashboard(drive_service, sheets_service):
             selected_period_display = st.selectbox("Select MCM Period", options=period_options,
                                                    key="pco_view_reports_period")
             if selected_period_display:
+                # selected_period_key = next((k for k, p in active_periods.items() if
+                #                             f"{p['month_name']} {p['year']}" == selected_period_display), None)
                 selected_period_key = next((k for k, p in active_periods.items() if
-                                            f"{p['month_name']} {p['year']}" == selected_period_display), None)
+                            p.get('month_name') and p.get('year') and # Ensure keys exist in p
+                            f"{p.get('month_name')} {p.get('year')}" == selected_period_display), None)
                 if selected_period_key and sheets_service:
                     sheet_id = mcm_periods[selected_period_key]['spreadsheet_id']
                     with st.spinner("Loading data from Google Sheet..."):
@@ -1090,8 +1093,11 @@ def pco_dashboard(drive_service, sheets_service):
             selected_viz_period_display = st.selectbox("Select MCM Period for Visualization",
                                                        options=viz_period_options, key="pco_viz_period")
             if selected_viz_period_display and sheets_service:
+                # selected_viz_period_key = next((k for k, p in all_mcm_periods.items() if
+                #                                 f"{p['month_name']} {p['year']}" == selected_viz_period_display), None)
                 selected_viz_period_key = next((k for k, p in all_mcm_periods.items() if
-                                                f"{p['month_name']} {p['year']}" == selected_viz_period_display), None)
+                                p.get('month_name') and p.get('year') and # Ensure keys exist in p
+                                f"{p.get('month_name')} {p.get('year')}" == selected_viz_period_display), None)
                 if selected_viz_period_key:
                     sheet_id_viz = all_mcm_periods[selected_viz_period_key]['spreadsheet_id']
                     with st.spinner("Loading data for visualizations..."):
