@@ -1026,8 +1026,15 @@ def pco_dashboard(drive_service, sheets_service):
         if not active_periods:
             st.info("No MCM periods to view reports for.")
         else:
-            period_options = [f"{p['month_name']} {p['year']}" for k, p in
-                              sorted(active_periods.items(), key=lambda item: item[0], reverse=True)]
+            period_options = [
+                 f"{p.get('month_name')} {p.get('year')}"
+                 for k, p in sorted(active_periods.items(), key=lambda item: item[0], reverse=True)
+                 if p.get('month_name') and p.get('year') # Only include if both month_name and year exist
+             ]
+             if not period_options:
+                 st.warning("No valid MCM periods with complete month and year information found to display options.")
+            # period_options = [f"{p['month_name']} {p['year']}" for k, p in
+            #                   sorted(active_periods.items(), key=lambda item: item[0], reverse=True)]
             selected_period_display = st.selectbox("Select MCM Period", options=period_options,
                                                    key="pco_view_reports_period")
             if selected_period_display:
@@ -1071,8 +1078,15 @@ def pco_dashboard(drive_service, sheets_service):
         if not all_mcm_periods:
             st.info("No MCM periods to visualize data from.")
         else:
-            viz_period_options = [f"{p['month_name']} {p['year']}" for k, p in
-                                  sorted(all_mcm_periods.items(), key=lambda item: item[0], reverse=True)]
+            viz_period_options = [
+                f"{p.get('month_name')} {p.get('year')}"
+                for k, p in sorted(all_mcm_periods.items(), key=lambda item: item[0], reverse=True)
+                if p.get('month_name') and p.get('year') # Only include if both month_name and year exist
+            ]
+            if not viz_period_options:
+                st.warning("No valid MCM periods with complete month and year information found for visualization options.")
+            # viz_period_options = [f"{p['month_name']} {p['year']}" for k, p in
+            #                       sorted(all_mcm_periods.items(), key=lambda item: item[0], reverse=True)]
             selected_viz_period_display = st.selectbox("Select MCM Period for Visualization",
                                                        options=viz_period_options, key="pco_viz_period")
             if selected_viz_period_display and sheets_service:
