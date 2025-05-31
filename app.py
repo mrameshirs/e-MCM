@@ -977,7 +977,12 @@ def pco_dashboard(drive_service, sheets_service):
                     if new_status != is_active:
                         mcm_periods[period_key]["active"] = new_status
                         if save_mcm_periods(drive_service, mcm_periods):  # Pass drive_service
-                            st.success(f"Status for {data['month_name']} {data['year']} updated.");
+                            #st.success(f"Status for {data['month_name']} {data['year']} updated.");
+                            
+                            # NEW FIXED LINES:
+                            month_name_succ = data.get('month_name', 'Unknown Period') # Provide a default
+                            year_succ = data.get('year', '') # Default to empty if year is also part of the issue
+                            st.success(f"Status for {month_name_succ} {year_succ} updated.");
                             st.rerun()
                         else:
                             st.error("Failed to save updated MCM period status to Drive.")
