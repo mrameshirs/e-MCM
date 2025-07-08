@@ -8,7 +8,7 @@ import plotly.express as px
 from streamlit_option_menu import option_menu
 import math  # For math.ceil if needed
 from ui_mcm_agenda import mcm_agenda_tab # <--- IMPORT THE NEW TAB FUNCTION
-from ui_pco_reports import pco_reports_dashboard
+
 
 # Assuming google_utils.py and config.py are in the same directory and correctly set up
 from google_utils import (
@@ -41,41 +41,11 @@ def pco_dashboard(drive_service, sheets_service):
                     del st.session_state[key]
             st.rerun()
         st.markdown("---")
-        # --- Smart Audit Tracker Button in Sidebar ---
-        st.markdown(
-            """
-            <style>
-            .stButton>button {
-                background-image: linear-gradient(to right, #FF512F 0%, #DD2476  51%, #FF512F  100%);
-                color: white;
-                padding: 15px 30px;
-                text-align: center;
-                text-transform: uppercase;
-                transition: 0.5s;
-                background-size: 200% auto;
-                border: none;
-                border-radius: 10px;
-                display: block;
-                font-weight: bold;
-                width: 100%;
-            }
-            .stButton>button:hover {
-                background-position: right center;
-                color: #fff;
-                text-decoration: none;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-        if st.button("🚀 Smart Audit Tracker", key="launch_sat_pco"):
-            st.session_state.app_mode = "smart_audit_tracker"
-            st.rerun()
-        st.markdown("---")
     selected_tab = option_menu(
         menu_title=None,
-         options=["Create MCM Period", "Manage MCM Periods", "View Uploaded Reports", 
-                 "MCM Agenda", "Visualizations", "Reports"],
+        options=["Create MCM Period", "Manage MCM Periods", "View Uploaded Reports", 
+                 "MCM Agenda", # <--- ADDED "MCM Agenda"
+                 "Visualizations"],
         icons=["calendar-plus-fill", "sliders", "eye-fill", 
                "journal-richtext", # <--- ADDED ICON for MCM Agenda (Example icon)
                "bar-chart-fill"],
@@ -583,10 +553,6 @@ def pco_dashboard(drive_service, sheets_service):
                         st.error("Google Sheets service unavailable when trying to load visualization data.")
                     elif not sheets_service and selected_viz_period_str_tab:
                         st.error("Google Sheets service is not available.")
-    # ADD THIS ELIF BLOCK for the new "Reports" tab
-    elif selected_tab == "Reports":
-        pco_reports_dashboard(drive_service, sheets_service)
-
     # elif selected_tab == "Visualizations":
     #     st.markdown("<h3>Data Visualizations</h3>", unsafe_allow_html=True)
     #     all_mcm_periods_for_viz_tab = mcm_periods  # Use directly loaded mcm_periods
